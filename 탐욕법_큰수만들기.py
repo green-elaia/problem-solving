@@ -1,28 +1,38 @@
-def solution(number, k):
+def solution1(number, k):
     answer = []
-    for i in range(k):
-        answer.append(number[i])
-
-    remaining_amount = k
-    idx = k
-    while remaining_amount:
-        min_x = min(answer)
-        if min_x <= number[idx]:
-            cnt = answer.count(min_x)
-            for _ in range(cnt):
-                answer.remove(min_x)
-                answer.append(number[idx])
-                idx += 1
-                remaining_amount -= 1
-                if not remaining_amount:
+    sorted_num = sorted(number, reverse=True)
+    number = list(number)
+    if number == sorted_num:
+        return ''.join(number[:-k])
+    i = 0
+    while True:
+        x = sorted_num[i]
+        if x in number:
+            idx = number.index(x)
+            if idx <= k:
+                answer.append(x)
+                del number[:idx+1]
+                k -= idx
+                if not k:
                     break
-        elif min_x > number[idx]:
-            idx += 1
-            remaining_amount -= 1
+                sorted_num.remove(x)
+                i = 0
+            else:
+                i += 1
+    
+    answer = answer + number
+    answer = ''.join(answer)
+    return answer
 
-    answer = answer + list(number[idx:])
-    return ''.join(answer)
 
 
-if __name__ == '__main__':
-    solution('4177252841', 4)
+def solution2(number, k):
+    stack = [number[0]]
+    for num in number[1:]:
+        while len(stack) > 0 and stack[-1] < num and k > 0:
+            k -= 1
+            stack.pop()
+        stack.append(num)
+    if k != 0:
+        stack = stack[:-k]
+    return ''.join(stack)
